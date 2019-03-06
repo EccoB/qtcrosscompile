@@ -67,7 +67,13 @@ RUN mkdir /build
 WORKDIR  /build
 RUN git clone https://github.com/mxe/mxe.git
 
-# Build cross environment
+#-------  Build cross environment --------------
+# make qt MXE_TARGETS=i686-w64-mingw32.static   # MinGW-w64, 32-bit, static libs
+# Other targets you can use:
+# make qt MXE_TARGETS=x86_64-w64-mingw32.static # MinGW-w64, 64-bit, static libs
+# make qt MXE_TARGETS=i686-w64-mingw32.shared   # MinGW-w64, 32-bit, shared libs
+# https://stackoverflow.com/questions/10934683/how-do-i-configure-qt-for-cross-compilation-from-linux-to-windows-target
+
 RUN cd mxe && make qtbase
 RUN cd mxe && make qtmultimedia
 
@@ -83,12 +89,16 @@ RUN ln -s /build/mxe/usr/bin/i686-w64-mingw32.static-qmake-qt5 /build/mxe/usr/bi
 # Here the project specific workflow starts.
 #
 # Now copy the sources. They will become part of the image.
+
+# Build qserialport
+
+RUN mkdir /qtserialport
+WORKDIR /qtserialport
+RUN git clone git://code.qt.io/qt/qtserialport.git
+RUN mkdir build
+WORKDIR /qtserialport/build
+RUN qmake ../qtserialport/qtserialport.pro
+RUN make && make install
+
 RUN mkdir /src
-COPY . /src
-
-# Switch to the source directory
 WORKDIR /src
-
-# Now build the project
-RUN qmake
-RUN make
