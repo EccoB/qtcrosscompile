@@ -58,7 +58,10 @@ RUN apt-get install -y --no-install-recommends \
 	subversion \
 	texinfo \
 	unzip \
-	wget
+	wget \
+	lzip \
+	unzip \
+	curl 
 
 # see http://stackoverflow.com/questions/10934683/how-do-i-configure-qt-for-cross-compilation-from-linux-to-windows-target
 
@@ -74,8 +77,8 @@ RUN git clone https://github.com/mxe/mxe.git
 # make qt MXE_TARGETS=i686-w64-mingw32.shared   # MinGW-w64, 32-bit, shared libs
 # https://stackoverflow.com/questions/10934683/how-do-i-configure-qt-for-cross-compilation-from-linux-to-windows-target
 
-RUN cd mxe && make qtbase
-RUN cd mxe && make qtmultimedia
+RUN cd mxe && make qtbase MXE_TARGETS=i686-w64-mingw32.shared
+RUN cd mxe && make qtmultimedia MXE_TARGETS=i686-w64-mingw32.shared
 
 # TODO: Cleanup all unneeded stuff to make a slim image
 
@@ -83,7 +86,7 @@ RUN cd mxe && make qtmultimedia
 ENV PATH /build/mxe/usr/bin:$PATH
 
 # Add a qmake alias
-RUN ln -s /build/mxe/usr/bin/i686-w64-mingw32.static-qmake-qt5 /build/mxe/usr/bin/qmake
+RUN ln -s /build/mxe/usr/bin/i686-w64-mingw32.shared-qmake-qt5 /build/mxe/usr/bin/qmake
 
 ##########################################################################
 # Here the project specific workflow starts.
@@ -98,7 +101,7 @@ RUN git clone git://code.qt.io/qt/qtserialport.git
 RUN mkdir build
 WORKDIR /qtserialport/build
 RUN qmake ../qtserialport/qtserialport.pro
-RUN make && make install
+RUN make MXE_TARGETS=i686-w64-mingw32.shared && make install
 
 RUN mkdir /src
 WORKDIR /src
