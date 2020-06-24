@@ -59,7 +59,10 @@ RUN apt-get install -y --no-install-recommends \
 	subversion \
 	texinfo \
 	unzip \
-	wget
+	wget \
+	lzip \
+	unzip \
+	curl 
 
 # see http://stackoverflow.com/questions/10934683/how-do-i-configure-qt-for-cross-compilation-from-linux-to-windows-target
 
