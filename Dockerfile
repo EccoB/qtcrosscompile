@@ -62,7 +62,8 @@ RUN apt-get install -y --no-install-recommends \
 	wget \
 	lzip \
 	unzip \
-	curl 
+	curl \
+	libssl-dev
 
 # see http://stackoverflow.com/questions/10934683/how-do-i-configure-qt-for-cross-compilation-from-linux-to-windows-target
 
@@ -77,6 +78,9 @@ RUN git clone https://github.com/mxe/mxe.git
 # make qt MXE_TARGETS=x86_64-w64-mingw32.static # MinGW-w64, 64-bit, static libs
 # make qt MXE_TARGETS=i686-w64-mingw32.shared   # MinGW-w64, 32-bit, shared libs
 # https://stackoverflow.com/questions/10934683/how-do-i-configure-qt-for-cross-compilation-from-linux-to-windows-target
+
+# This fails atm due to missing OpenSSL
+# Configure with -DCMAKE_USE_OPENSSL=OFF to solve or install openSSL by libssl-dev
 
 RUN cd mxe && make qtbase MXE_TARGETS=i686-w64-mingw32.shared
 RUN cd mxe && make qtmultimedia MXE_TARGETS=i686-w64-mingw32.shared
