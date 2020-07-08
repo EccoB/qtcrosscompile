@@ -18,3 +18,6 @@ Linux using Wine
  $ wine ./helloworld.exe
 ```
 
+To build the docker image on your own, use the ARG command to switch between an image that will create static linked programms vs dynamic linked.
+docker build ./ --build-arg shared=true  -- dynamic linked libraries
+docker build ./				 -- static linked libraries 

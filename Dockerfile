@@ -81,9 +81,17 @@ RUN git clone https://github.com/mxe/mxe.git
 
 # This fails atm due to missing OpenSSL
 # Configure with -DCMAKE_USE_OPENSSL=OFF to solve or install openSSL by libssl-dev
+ARG shared
 
-RUN cd mxe && make qtbase MXE_TARGETS=i686-w64-mingw32.shared
-RUN cd mxe && make qtmultimedia MXE_TARGETS=i686-w64-mingw32.shared
+RUN if [ "e$shared" = "e" ] ; then \
+	echo "Static Branch" && cd mxe && make qtbase ; else \
+	echo "Shared Branch" && cd mxe && make qtbase MXE_TARGETS=i686-w64-mingw32.shared ; \
+	fi
+
+RUN if [ "e$shared" = "e" ] ; then \
+	echo "static Branch" && cd mxe && make qtmultimedia ; else \
+	echo "Shared Branch" && cd mxe && make qtmultimedia MXE_TARGETS=i686-w64-mingw32.shared ; \
+	fi
 
 # TODO: Cleanup all unneeded stuff to make a slim image
 
@@ -91,7 +99,10 @@ RUN cd mxe && make qtmultimedia MXE_TARGETS=i686-w64-mingw32.shared
 ENV PATH /build/mxe/usr/bin:$PATH
 
 # Add a qmake alias
-RUN ln -s /build/mxe/usr/bin/i686-w64-mingw32.shared-qmake-qt5 /build/mxe/usr/bin/qmake
+RUN if [ "e$shared" = "e" ] ; then \
+	echo "Static Branch" && ln -s /build/mxe/usr/bin/i686-w64-mingw32.static-qmake-qt5 /build/mxe/usr/bin/qmake ; else \
+	echo "Shared Branch" && ln -s /build/mxe/usr/bin/i686-w64-mingw32.shared-qmake-qt5 /build/mxe/usr/bin/qmake ; \
+	fi
 
 ##########################################################################
 # Here the project specific workflow starts.
@@ -106,7 +117,11 @@ RUN git clone git://code.qt.io/qt/qtserialport.git
 RUN mkdir build
 WORKDIR /qtserialport/build
 RUN qmake ../qtserialport/qtserialport.pro
-RUN make MXE_TARGETS=i686-w64-mingw32.shared && make install
+
+RUN if [ "e$shared" = "e"]; \
+	echo "Static Branch" && make && make install ; else \
+	echo "Shared Branch" && make MXE_TARGETS=i686-w64-mingw32.shared && make install ;\
+	fi
 
 RUN mkdir /src
 WORKDIR /src
