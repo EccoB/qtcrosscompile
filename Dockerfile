@@ -118,7 +118,7 @@ RUN mkdir build
 WORKDIR /qtserialport/build
 RUN qmake ../qtserialport/qtserialport.pro
 
-RUN if [ "e$shared" = "e"]; \
+RUN if [ "e$shared" = "e"]; then \
 	echo "Static Branch" && make && make install ; else \
 	echo "Shared Branch" && make MXE_TARGETS=i686-w64-mingw32.shared && make install ;\
 	fi
