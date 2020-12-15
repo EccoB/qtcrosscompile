@@ -21,7 +21,7 @@
 #
 
 
-FROM debian:buster
+FROM debian:stable-slim
 
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends \
@@ -118,9 +118,9 @@ RUN mkdir build
 WORKDIR /qtserialport/build
 RUN qmake ../qtserialport/qtserialport.pro
 
-RUN if [ "e$shared" = "e"]; then \
+RUN if [ "e$shared" = "e" ] ; then \
 	echo "Static Branch" && make && make install ; else \
-	echo "Shared Branch" && make MXE_TARGETS=i686-w64-mingw32.shared && make install ;\
+	echo "Shared Branch" && make MXE_TARGETS=i686-w64-mingw32.shared && make install ; \
 	fi
 
 RUN mkdir /src
